@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Phone, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export default function Navbar() {
   const t = useTranslations("Navbar");
@@ -20,9 +21,14 @@ export default function Navbar() {
           className="flex items-center gap-2 md:gap-3"
           onClick={closeMenu}
         >
-          <div className="flex items-center justify-center w-8 h-8 md:w-10 md:h-10 bg-blue-600 text-white font-bold rounded-lg text-lg">
-            D
-          </div>
+          <Image
+            src="/logo.svg"
+            alt="FindDoctor Logo"
+            width={40}
+            height={40}
+            className="w-8 h-8 md:w-10 md:h-10 object-contain"
+          />
+
           <div className="flex flex-col">
             <span className="text-lg md:text-xl font-bold leading-none">
               FindDoctor
@@ -90,11 +96,7 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div className="absolute top-full left-0 w-full bg-white border-t border-gray-100 shadow-lg lg:hidden flex flex-col px-4 py-6 gap-6 z-50">
           <nav className="flex flex-col gap-4 text-base font-medium text-gray-800">
-            <Link
-              href="/"
-              onClick={closeMenu}
-              className="hover:text-blue-600"
-            >
+            <Link href="/" onClick={closeMenu} className="hover:text-blue-600">
               {t("home")}
             </Link>
             <Link
