@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   title: "FindDoctor",
   description:
     "Платформа для поиска врачей с полными профилями, кейсами и отзывами",
+  verification: {
+    google: "google77b0304466a9131a", 
+  },
 };
 
 const inter = Inter({
@@ -45,7 +48,7 @@ export default async function RootLayout({
                 c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
                 t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
                 y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "w0cj73zmco");
+            })(window, document, "clarity", "script", "wle0syq6t2");
           `}
         </Script>
       </head>

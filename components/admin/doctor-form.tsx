@@ -8,10 +8,10 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Save, Loader2, User, ListChecks, Info, Award,
   Image as ImageIcon, MessageSquare, DollarSign, CircleQuestionMark,
+  Globe
 } from "lucide-react";
 
 import { useAuth } from "./auth-provider";
-
 import { createContent, updateContent, syncDoctorCases, generateSlug } from "@/lib/firestore/client-content";
 
 import { DoctorBasicTab } from "./doctor-tabs/basic-tab";
@@ -22,6 +22,7 @@ import { DoctorCasesTab } from "./doctor-tabs/cases-tab";
 import { DoctorReviewsTab } from "./doctor-tabs/reviews-tab";
 import { DoctorPricesTab } from "./doctor-tabs/prices-tab";
 import { DoctorFAQTab } from "./doctor-tabs/faq-tab";
+import { DoctorSeoTab } from "./doctor-tabs/seo-tab";
 
 export function DoctorForm({ initialData, isEditing = false }: any) {
   const [saving, setSaving] = useState(false);
@@ -46,6 +47,14 @@ export function DoctorForm({ initialData, isEditing = false }: any) {
       cases: [],
       reviews: [],
       prices: [],
+      seo: {
+        metaTitle: "",
+        metaDescription: "",
+        canonicalUrl: "",
+        noIndex: false,
+        schemaMarkup: "",
+        ogImage: "",
+      }
     },
   });
 
@@ -60,16 +69,24 @@ export function DoctorForm({ initialData, isEditing = false }: any) {
       const { cases, ...doctorData } = data;
       let doctorId = initialData?.id;
 
+      if (!doctorData.seo?.ogImage && doctorData.photo) {
+        doctorData.seo = {
+          ...doctorData.seo,
+          ogImage: doctorData.photo
+        };
+      }
+
       if (isEditing && doctorId) {
         await updateContent(doctorId, doctorData);
       } else {
         doctorId = await createContent(doctorData, user.uid, user.email || "Admin");
       }
 
-if (doctorId) {
+      if (doctorId) {
         const doctorSlug = doctorData.slug || generateSlug(doctorData.name?.ru || "doctor");
         await syncDoctorCases(doctorId, doctorSlug, doctorData.name, cases || []);
       }
+      
       router.push("/admin/doctors");
       router.refresh();
     } catch (error) {
@@ -113,16 +130,14 @@ if (doctorId) {
                 value="basic"
                 className="flex items-center px-4 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1A73E8] data-[state=active]:text-[#1A73E8] data-[state=active]:bg-transparent data-[state=active]:shadow-none text-[#5F6368] hover:text-[#202124] whitespace-nowrap transition-colors"
               >
-                <User className="w-[18px] h-[18px] mr-2 shrink-0" /> Данные
-                врача
+                <User className="w-[18px] h-[18px] mr-2 shrink-0" /> Данные врача
               </TabsTrigger>
 
               <TabsTrigger
                 value="benefits"
                 className="flex items-center px-4 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1A73E8] data-[state=active]:text-[#1A73E8] data-[state=active]:bg-transparent data-[state=active]:shadow-none text-[#5F6368] hover:text-[#202124] whitespace-nowrap transition-colors"
               >
-                <ListChecks className="w-[18px] h-[18px] mr-2 shrink-0" />{" "}
-                Услуги
+                <ListChecks className="w-[18px] h-[18px] mr-2 shrink-0" /> Услуги
               </TabsTrigger>
 
               <TabsTrigger
@@ -136,8 +151,7 @@ if (doctorId) {
                 value="certs"
                 className="flex items-center px-4 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1A73E8] data-[state=active]:text-[#1A73E8] data-[state=active]:bg-transparent data-[state=active]:shadow-none text-[#5F6368] hover:text-[#202124] whitespace-nowrap transition-colors"
               >
-                <Award className="w-[18px] h-[18px] mr-2 shrink-0" />{" "}
-                Сертификаты
+                <Award className="w-[18px] h-[18px] mr-2 shrink-0" /> Сертификаты
               </TabsTrigger>
 
               <TabsTrigger
@@ -151,24 +165,28 @@ if (doctorId) {
                 value="reviews"
                 className="flex items-center px-4 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1A73E8] data-[state=active]:text-[#1A73E8] data-[state=active]:bg-transparent data-[state=active]:shadow-none text-[#5F6368] hover:text-[#202124] whitespace-nowrap transition-colors"
               >
-                <MessageSquare className="w-[18px] h-[18px] mr-2 shrink-0" />{" "}
-                Отзывы
+                <MessageSquare className="w-[18px] h-[18px] mr-2 shrink-0" /> Отзывы
               </TabsTrigger>
 
               <TabsTrigger
                 value="prices"
                 className="flex items-center px-4 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1A73E8] data-[state=active]:text-[#1A73E8] data-[state=active]:bg-transparent data-[state=active]:shadow-none text-[#5F6368] hover:text-[#202124] whitespace-nowrap transition-colors"
               >
-                <DollarSign className="w-[18px] h-[18px] mr-2 shrink-0" />{" "}
-                Прайс-лист
+                <DollarSign className="w-[18px] h-[18px] mr-2 shrink-0" /> Прайс-лист
               </TabsTrigger>
 
-                            <TabsTrigger
+              <TabsTrigger
                 value="faq"
                 className="flex items-center px-4 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1A73E8] data-[state=active]:text-[#1A73E8] data-[state=active]:bg-transparent data-[state=active]:shadow-none text-[#5F6368] hover:text-[#202124] whitespace-nowrap transition-colors"
               >
-                <CircleQuestionMark className="w-[18px] h-[18px] mr-2 shrink-0" />{" "}
-                Вопросы
+                <CircleQuestionMark className="w-[18px] h-[18px] mr-2 shrink-0" /> Вопросы
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="seo"
+                className="flex items-center px-4 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-[#1A73E8] data-[state=active]:text-[#1A73E8] data-[state=active]:bg-transparent data-[state=active]:shadow-none text-[#5F6368] hover:text-[#202124] whitespace-nowrap transition-colors"
+              >
+                <Globe className="w-[18px] h-[18px] mr-2 shrink-0" /> SEO
               </TabsTrigger>
             </TabsList>
           </div>
@@ -204,6 +222,10 @@ if (doctorId) {
 
             <TabsContent value="faq" className="mt-0">
               <DoctorFAQTab />
+            </TabsContent>
+
+            <TabsContent value="seo" className="mt-0">
+              <DoctorSeoTab />
             </TabsContent>
           </div>
         </Tabs>
