@@ -1,3 +1,4 @@
+import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getContentBySlug, getContentById } from "@/lib/firestore/client-content";
 import { DoctorProfile } from "@/lib/firestore/types";
@@ -15,7 +16,7 @@ interface DoctorPageProps {
   }>;
 }
 
-export async function generateMetadata({ params }: DoctorPageProps) {
+export async function generateMetadata({ params }: DoctorPageProps): Promise<Metadata> {
   const { slug } = await params;
 
   let doc = await getContentBySlug(slug, "doctors");
@@ -27,10 +28,29 @@ export async function generateMetadata({ params }: DoctorPageProps) {
 
   const doctor = doc as unknown as DoctorProfile;
   const name = doctor.name?.ru || "Врач";
+  const seo = doctor.seo;
+
+  const ogImageUrl = seo?.ogImage || doctor.photo;
 
   return {
-    title: doctor.seo?.metaTitle || `${name} — Запись на прием`,
-    description: doctor.seo?.metaDescription || `Запишитесь на прием к врачу: ${name}`,
+    title: seo?.metaTitle || `${name} — Запись на прием`,
+    description: seo?.metaDescription || `Запишитесь на прием к врачу: ${name}. Специализация: ${doctor.specialty?.ru || ""}`,
+    
+    alternates: seo?.canonicalUrl ? {
+      canonical: seo.canonicalUrl,
+    } : {},
+
+    robots: {
+      index: !seo?.noIndex,
+      follow: !seo?.noIndex,
+    },
+
+    openGraph: {
+      title: seo?.metaTitle || `${name} — Запись на прием`,
+      description: seo?.metaDescription || `Запишитесь на прием к врачу: ${name}`,
+      images: ogImageUrl ? [{ url: ogImageUrl }] : [],
+      type: "profile",
+    }
   };
 }
 
@@ -48,6 +68,14 @@ export default async function DoctorProfilePage({ params }: DoctorPageProps) {
 
   return (
     <main className="min-h-screen bg-white pb-20">
+      
+      {doctor.seo?.schemaMarkup && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: doctor.seo.schemaMarkup }}
+        />
+      )}
+
       <ViewTracker doctorId={doctor.id} />
       <Hero variant="doctor" doctor={doctor} />
       <DoctorInfo doctor={doctor} />
