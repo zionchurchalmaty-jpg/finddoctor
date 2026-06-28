@@ -107,7 +107,7 @@ export function ContentEditor({
     editorProps: {
       attributes: {
         class:
-          "prose prose-neutral max-w-none min-h-[400px] focus:outline-none px-4 py-3 prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-p:my-0 prose-p:leading-normal",
+          "prose prose-neutral max-w-none min-h-[400px] focus:outline-none px-4 py-3 prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-p:leading-normal",
       },
     },
     onUpdate: ({ editor }) => {

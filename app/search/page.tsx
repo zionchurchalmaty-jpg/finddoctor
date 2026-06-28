@@ -13,10 +13,8 @@ export default async function SearchPage({
   const { city, specialty } = await searchParams;
   const lang = "ru";
 
-  // Берем переводы для SearchPage (namespace берется автоматически, если настроен i18n.ts)
   const t = await getTranslations("SearchPage");
   
-  // В функцию поиска жестко передаем русский язык
   const doctors = await searchDoctors(lang, city, specialty);
 
   return (
